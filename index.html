@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ニコファーレもどき</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="texts" style="margin: 0 auto;margin-top:20px;padding:2px;">
+    <iframe id=videoplayer src="https://www.youtube.com/embed/CMNYk0oQ6bY" title="YouTube video player" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+
+  </iframe>
+    <div id=chat style="padding:13px;background-color:rgb(236, 236, 236);">
+     <div id="in" style="height:20%;">
+      <form id="frm-post" style="display:flex;">
+        <input type="text" id="msg" style="width:90%;height:100%;">
+        <button style="width:10%;">送信</button>
+      </form>
+      <ul id="msglist">
+      </ul>
+     </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- 発言ログ -->
+  <ul id="msglist">
+  </ul>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    //-------------------------------------
+    // Socket.ioサーバへ接続
+    //-------------------------------------
+    const socket = io();
+
+    /**
+     * [イベント] フォームが送信された
+     */
+    document.querySelector("#frm-post").addEventListener("submit", (e) => {
+      // 規定の送信処理をキャンセル(画面遷移しないなど)
+      e.preventDefault();
+
+      // 入力内容を取得する
+      const msg = document.querySelector("#msg");
+      if (msg.value === "") {
+        return (false);
+      }
+
+      const message = msg.value;
+      // Socket.ioサーバへ送信
+      socket.emit("post", message);
+
+      // 発言フォームを空にする
+      msg.value = "";
+    });
+
+    /**
+     * [イベント] 誰かが発言した
+     */
+    socket.on("member-post", (msg) => {
+      const list = document.querySelector("#videoplayer");
+      list.src = "https://www.youtube.com/embed/" + msg + "?autoplay=1";
+    });
+
+    socket.on("post-msg", (msg) => {
+      console.log(msg)
+      const list = document.querySelector("#msglist");
+      const li = document.createElement("li");
+      li.innerHTML = msg;
+      list.insertBefore(li, list.firstChild);
+    })
+    /**
+     * [イベント] ページの読込み完了
+     */
+    window.onload = () => {
+      // テキストボックスを選択する
+      document.querySelector("#msg").focus();
+    }
+  </script>
+</body>
+<style>
+  body{
+    background-color: rgb(221, 221, 221);
+}
+
+.texts{
+    background-color:white;
+}
+
+#chat{
+    height:300px;
+}
+
+@media screen and (min-width:900px) { 
+    .texts{
+        width:900px;
+        
+    } 
+    #videoplayer{
+        width:900px;
+        height:506px;
+    } 
+}
+@media screen and (max-width:900px) { 
+    .texts{
+        width:100%;
+        
+    }     
+    #videoplayer{
+        width:100%;
+        height:auto;
+    } 
+}
+</style>
+</html>

@@ -1,0 +1,32 @@
+body{
+    background-color: rgb(221, 221, 221);
+}
+
+.texts{
+    background-color:white;
+}
+
+#chat{
+    height:300px;
+}
+
+@media screen and (min-width:900px) { 
+    .texts{
+        width:900px;
+        
+    } 
+    #videoplayer{
+        width:900px;
+        height:506px;
+    } 
+}
+@media screen and (max-width:900px) { 
+    .texts{
+        width:100%;
+        
+    }     
+    #videoplayer{
+        width:100%;
+        height:auto;
+    } 
+}

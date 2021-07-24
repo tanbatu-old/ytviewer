@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ニコファーレもどき</title>
+  <meta name="viewport" content="width=600">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="cilents.js"></script>
+</head>
+
+<body>
+    <div id=main style="display:flex">
+        <div id="main_block">
+            <div id="main_player">
+                <div id=youtube_player></div>
+            </div>
+        </div>
+        <div id="chat_block">
+            <ul id="chatlist">
+                <li id="chatm">
+                    <div class="chat">
+                        <div style="display:flex;padding-left: 10px;">
+                            <p id=message_name  style="font-size:16px;color:white;font-weight: bold;">お知らせ</p>
+                        </div>
+                        <div class=message_text>Ver1.1 サイトデザイン変えた</div>
+                    </div>
+                    
+                </li>
+
+            </ul>
+            <form id="chat_frm">
+                <input autocomplete="off" id=msg placeholder="メッセージを送信" type="text">
+
+            </form>
+        </div>
+        <div id="profile">
+            <input placeholder="名前" type=text id="nameinput"></input>
+        </div>
+        <div id="que">
+            <ul id="chatlist">
+                <li id="chatm">
+                    <div class="chat">
+                        <div style="display:flex;padding-left: 10px;">
+                            <p id=message_name  style="font-size:16px;color:white;font-weight: bold;">動画リスト</p>
+                        </div>
+                        <div class=message_text>準備中</div>
+                    </div>
+                    
+                </li>
+
+            </ul>
+            <form id="yt_frm">
+                <input autocomplete="off" id=link placeholder="ここにyoutubeリンク" type="text"></input>
+
+            </form>
+        </div>
+        
+    </div>
+
+</body>
+
+<style>
+    *{
+    margin:0px;
+    padding:0px;
+}
+html body{
+    height:100%;
+    background-color:rgb(14, 14, 14);
+}
+
+#main{
+    height:100%;
+}
+
+@media screen and (min-width:900px) { 
+    #main_block{
+        margin:0 auto;
+        width:45%;
+        height:100vh;
+    }
+    #main_player{
+        margin-top:3%;
+        display: flex;
+        flex-direction: column;
+        background-color:rgb(34, 34, 34);
+        width:100%;             
+        aspect-ratio: 16 / 9;
+    }
+    
+}
+@media screen and (max-width:900px) { 
+    #main_block{
+        margin:0 auto;
+        width:100%;
+        height:100vh;
+    }  
+    #main_player{
+        margin-top:3%;
+        display: flex;
+        flex-direction: column;
+        background-color:rgb(34, 34, 34);
+        width:100%;             
+        height: 36.25%;
+    }
+    
+}
+
+
+#youtube_player{
+    
+    width:100%;
+    height:100%;
+}
+
+#chat_block{
+    position:absolute;
+    background-color:rgb(27, 27, 27);
+    width:23%;
+    height: 95%;
+    top:3%;
+    left:1%;
+    border-radius: 15px;
+}
+
+#chat_frm{
+    position:absolute;
+    bottom:1%;
+    width:99%;
+    height:5%
+}
+
+#chat_frm input{
+    color:white;
+    width:98%;
+    padding-left:2%;
+    font-size: 120%;
+    border-radius: 10px;
+    height:100%;
+    background-color: rgb(75, 75, 75);
+    border:none;
+    margin-left:2px;
+}
+#link{
+    position:absolute;
+    bottom:1%;
+    width:99%;
+    height:5%;
+    color:white;
+    width:98%;
+    padding-left:2%;
+    font-size: 120%;
+    border-radius: 10px;
+    background-color: rgb(75, 75, 75);
+    border:none;
+    margin-left:2px;
+}
+
+#nameinput{
+    color: white;
+    padding-left: 2%;
+    font-size: 120%;
+    border-radius: 10px;
+    margin-top: 10px;
+    height: 47px;
+    background-color: rgb(75, 75, 75);
+    border: none;
+    width: 94%;
+    margin-left: 9px;
+}
+
+#chat_frm input::placeholder{
+
+    color:rgb(139, 139, 139);
+}
+
+#chat_frm input:focus{
+    outline: none;
+}
+
+#chatlist{
+    overflow: auto;
+    position:absolute;
+    top:15px;
+    width:100%;
+    height:92%;
+}
+
+.chat{
+    width:100%;
+    border-bottom: 1px rgb(65, 65, 65) solid;
+}
+
+.message_text{
+    color:white;
+    padding-left:10px;
+}
+
+#profile{
+    position:absolute;
+    right:1%;
+    top:3%;
+    width:23%;
+    height:20%;
+    border-radius: 15px;
+    background-color:rgb(37, 37, 37);
+
+}
+
+#que{
+    position:absolute;
+    background-color:rgb(37, 37, 37);
+    width:23%;
+    height:70%;
+    border-radius: 15px;
+    top:25%;
+    right:1%;
+}
+</style>
+
+<script type="text/javascript">
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+let yt_player
+let fid =""
+const socket = io();
+
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player(
+       'youtube_player', // 埋め込む場所の指定
+        {
+           width: 640, // プレーヤーの幅
+           height: 390, // プレーヤーの高さ
+            videoId: 'G2CHyuq74R0', // YouTubeのID
+           playerVars: {
+              rel: 0, // 再生終了後に関連動画を表示するかどうか設定
+              autoplay: 1, // 自動再生するかどうか設定,
+              mute:1
+        }
+      }
+   );
+   
+}
+
+
+
+
+document.getElementById('chat_frm').addEventListener("submit",(e) =>{
+  e.preventDefault();
+  const msg = document.querySelector("#msg");
+  
+  if (msg.value === "") {
+    return (false);
+  }
+
+  const message = msg.value;
+  socket.emit("post", message);
+
+  msg.value = "";
+})
+
+document.getElementById('yt_frm').addEventListener("submit",(e) =>{
+  e.preventDefault();
+  
+  let msg2 = document.querySelector("#link")
+  console.log(msg2)
+  if (msg2.value === "") {
+    return (false);
+  }
+
+
+  const message = msg2.value.slice(-11);
+  socket.emit("youtubelink", message);
+
+  msg2.value = "";
+})
+
+
+
+
+
+let ms = document.getElementById("chatm").outerHTML;
+
+socket.on("post-msg", (msg) => {
+    document.getElementById('chatlist').insertAdjacentHTML('afterbegin',ms)
+    document.getElementById('message_name').innerText = "お知らせ"
+    document.getElementsByClassName('message_text')[0].innerText = msg;
+})
+socket.on("token",(fid) =>{
+    setTimeout(() => {
+        ytPlayer.loadVideoById({videoId: fid});
+    }, 1000);
+
+})
+
+socket.on("postytlink",(link) =>{
+    ytPlayer.loadVideoById({videoId: link});
+})
+
+</script>
+
+</html>

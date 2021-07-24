@@ -1,0 +1,90 @@
+*{
+    margin:0px;
+    padding:0px;
+}
+html body{
+    height:100%;
+    background-color:rgb(14, 14, 14);
+}
+
+#main{
+    height:100%;
+}
+
+@media screen and (min-width:900px) { 
+    #main_block{
+        margin:0 auto;
+        width:45%;
+        height:100vh;
+    }
+    #main_player{
+        margin-top:3%;
+        display: flex;
+        flex-direction: column;
+        background-color:rgb(34, 34, 34);
+        width:100%;             
+        aspect-ratio: 16 / 9;
+    }
+    
+}
+@media screen and (max-width:900px) { 
+    #main_block{
+        margin:0 auto;
+        width:100%;
+        height:100vh;
+    }  
+    #main_player{
+        margin-top:3%;
+        display: flex;
+        flex-direction: column;
+        background-color:rgb(34, 34, 34);
+        width:100%;             
+        height: 36.25%;
+    }
+    
+}
+
+
+#youtube_player{
+    
+    width:100%;
+    height:100%;
+}
+
+#chat_block{
+    position:absolute;
+    background-color:rgb(27, 27, 27);
+    width:23%;
+    height: 95%;
+    top:3%;
+    left:1%;
+    border-radius: 15px;
+}
+
+#chat_frm{
+    position:absolute;
+    bottom:1%;
+    width:99%;
+    height:5%
+}
+
+#chat_frm input{
+    color:white;
+    width:98%;
+    padding-left:2%;
+    font-size: 120%;
+    border-radius: 10px;
+    height:100%;
+    background-color: rgb(75, 75, 75);
+    border:none;
+    margin-left:2px;
+}
+
+#chat_frm input::placeholder{
+
+    color:rgb(139, 139, 139);
+}
+
+#chat_frm input:focus{
+    outline: none;
+}
